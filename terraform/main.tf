@@ -54,6 +54,7 @@ module "security" {
   node_security_group_id = module.eks.node_security_group_id
   private_subnet_ids    = module.vpc.private_subnet_ids
   project_tag           = "karatu-2025-capstone"
+  github_repo           = "emmanuelkaringi/project-bedrock-karatu-2025"
 
   db_master_password = var.db_master_password
 }

@@ -32,3 +32,7 @@ output "bedrock_dev_secret_access_key" {
   value     = module.security.bedrock_dev_secret_access_key
   sensitive = true
 }
+
+output "github_actions_role_arn" {
+  value = module.security.github_actions_role_arn
+}
