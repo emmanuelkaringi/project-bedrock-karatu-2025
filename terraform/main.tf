@@ -68,3 +68,12 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  student_id = "alt-soe-025-4126"
+  project_tag = "karatu-2025-capstone"
+
+  depends_on = [module.eks]
+}

@@ -19,7 +19,7 @@ output "cluster_name" {
 }
 
 output "assets_bucket_name" {
-  value       = "pending"
+  value       = module.lambda.assets_bucket_name
   description = "S3 Assets Bucket Name"
 }
 
