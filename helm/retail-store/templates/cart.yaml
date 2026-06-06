@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: cart
+  ports:
+    - port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+        - name: cart
+          image: {{ .Values.cart.image }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RETAIL_CART_PERSISTENCE_PROVIDER
+              value: "dynamodb"
+            - name: RETAIL_CART_PERSISTENCE_DYNAMODB_TABLE_NAME
+              value: {{ .Values.dynamodb.table | quote }}
+            - name: RETAIL_CART_PERSISTENCE_DYNAMODB_CREATE_TABLE
+              value: "true"
+            - name: AWS_REGION
+              value: {{ .Values.dynamodb.region | quote }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi

@@ -54,5 +54,8 @@ terraform/bootstrap/.terraform/
 terraform/bootstrap/terraform.tfstate*
 terraform/bootstrap/.terraform.lock.hcl
 
+/linux-amd64
+/lambda.zip
+
 
 .dontpush

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: catalog
+  ports:
+    - port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-db
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  ports:
+    - port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: catalog-db
+  namespace: {{ .Release.Namespace }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.mysql.host }}
+    ports:
+      - port: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+        - name: catalog
+          image: {{ .Values.catalog.image }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RETAIL_CATALOG_PERSISTENCE_PROVIDER
+              value: "mysql"
+            - name: RETAIL_CATALOG_PERSISTENCE_ENDPOINT
+              value: "{{ .Values.mysql.host }}:3306"
+            - name: RETAIL_CATALOG_PERSISTENCE_DB_NAME
+              value: {{ .Values.mysql.database | quote }}
+            - name: RETAIL_CATALOG_SEARCH_ENABLED
+              value: "false"
+            - name: DB_USER
+              value: {{ .Values.mysql.user | quote }}
+            - name: DB_PASSWORD
+              value: {{ .Values.mysql.password | quote }}
+            - name: DB_NAME
+              value: {{ .Values.mysql.database | quote }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
