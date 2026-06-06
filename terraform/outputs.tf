@@ -1,21 +1,20 @@
-output "vpc_id" {
-  value       = module.vpc.vpc_id
-  description = "VPC ID"
-}
-
 output "region" {
   value       = "us-east-1"
   description = "AWS Region"
 }
 
-# Placeholders — we'll add more as we build
+output "vpc_id" {
+  value       = module.vpc.vpc_id
+  description = "VPC ID"
+}
+
 output "cluster_endpoint" {
-  value       = "pending"
+  value       = module.eks.cluster_endpoint
   description = "EKS Cluster Endpoint"
 }
 
 output "cluster_name" {
-  value       = "pending"
+  value       = module.eks.cluster_name
   description = "EKS Cluster Name"
 }
 

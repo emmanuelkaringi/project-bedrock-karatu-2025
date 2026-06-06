@@ -9,7 +9,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 3.0"
     }
   }
 }
@@ -29,4 +33,16 @@ module "vpc" {
 
   vpc_name    = "project-bedrock-vpc"
   project_tag = "karatu-2025-capstone"
+}
+
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_name       = "project-bedrock-cluster"
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  private_subnet_ids = module.vpc.private_subnet_ids
+  project_tag        = "karatu-2025-capstone"
+
+  depends_on = [module.vpc]
 }
