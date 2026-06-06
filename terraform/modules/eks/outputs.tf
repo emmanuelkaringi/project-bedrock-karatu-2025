@@ -21,3 +21,7 @@ output "cluster_oidc_issuer_url" {
 output "node_group_role_arn" {
   value = aws_iam_role.node_group.arn
 }
+
+output "cluster_certificate_authority" {
+  value = aws_eks_cluster.main.certificate_authority[0].data
+}
