@@ -59,3 +59,4 @@ terraform/bootstrap/.terraform.lock.hcl
 
 
 .dontpush
+helm/retail-store/values-secrets.yaml
