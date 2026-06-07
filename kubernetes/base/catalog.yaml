@@ -7,7 +7,8 @@ spec:
   selector:
     app: catalog
   ports:
-    - port: 8080
+    - port: 80
+      targetPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -30,6 +31,17 @@ subsets:
     ports:
       - port: 3306
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog
+  namespace: retail-app
+data:
+  RETAIL_CATALOG_PERSISTENCE_PROVIDER: mysql
+  RETAIL_CATALOG_PERSISTENCE_ENDPOINT: catalog-mysql:3306
+  RETAIL_CATALOG_PERSISTENCE_DB_NAME: retail_mysql
+  RETAIL_CATALOG_SEARCH_ENABLED: "false"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,24 +59,17 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: public.ecr.aws/aws-containers/retail-store-sample-catalog:latest
+          image: public.ecr.aws/aws-containers/retail-store-sample-catalog:1.6.1
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: catalog
           env:
-            - name: RETAIL_CATALOG_PERSISTENCE_PROVIDER
-              value: "mysql"
-            - name: RETAIL_CATALOG_PERSISTENCE_ENDPOINT
-              value: "catalog-mysql:3306"
-            - name: RETAIL_CATALOG_PERSISTENCE_DB_NAME
-              value: "retail_mysql"
-            - name: RETAIL_CATALOG_SEARCH_ENABLED
-              value: "false"
             - name: DB_USER
               value: "dbadmin"
             - name: DB_PASSWORD
               value: "Bedrock2026Secure"
-            - name: DB_NAME
-              value: "retail_mysql"
           resources:
             requests:
               cpu: 100m

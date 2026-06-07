@@ -1,54 +1,23 @@
-# Database configuration
-mysql:
-  host: "10.0.10.57"
-  port: 3306
-  user: "dbadmin"
-  password: "Bedrock2026Secure"
-  database: "retail_mysql"
+# Image versions - must be 1.6.1 for API compatibility
+images:
+  ui: public.ecr.aws/aws-containers/retail-store-sample-ui:1.6.1
+  catalog: public.ecr.aws/aws-containers/retail-store-sample-catalog:1.6.1
+  cart: public.ecr.aws/aws-containers/retail-store-sample-cart:1.6.1
+  orders: public.ecr.aws/aws-containers/retail-store-sample-orders:1.6.1
+  checkout: public.ecr.aws/aws-containers/retail-store-sample-checkout:1.6.1
 
-postgres:
-  host: "project-bedrock-postgres.cl8s20620zhh.us-east-1.rds.amazonaws.com"
-  port: 5432
+# AWS Managed Database endpoints
+rds:
+  mysql:
+    host: "10.0.10.57"
+    port: 3306
+    user: "dbadmin"
+    password: "Bedrock2026Secure"
+    database: "retail_mysql"
+  postgres:
+    host: "project-bedrock-postgres.cl8s20620zhh.us-east-1.rds.amazonaws.com"
+    port: 5432
 
 dynamodb:
   table: "project-bedrock-catalog"
   region: "us-east-1"
-
-redis:
-  host: "redis"
-  port: 6379
-
-rabbitmq:
-  host: "rabbitmq"
-  port: 5672
-  user: "guest"
-  password: "guest"
-
-# Catalog
-catalog:
-  image: public.ecr.aws/aws-containers/retail-store-sample-catalog:0.4.0
-  dbEndpoint: "catalog-db:3306"
-
-# Cart
-cart:
-  image: public.ecr.aws/aws-containers/retail-store-sample-cart:latest
-
-# Orders
-orders:
-  image: public.ecr.aws/aws-containers/retail-store-sample-orders:latest
-
-# Checkout
-checkout:
-  image: public.ecr.aws/aws-containers/retail-store-sample-checkout:latest
-
-# UI
-ui:
-  image: public.ecr.aws/aws-containers/retail-store-sample-ui:latest
-
-# RabbitMQ
-rabbitmq:
-  image: rabbitmq:3.9-management-alpine
-
-# Redis
-redis:
-  image: redis:6-alpine

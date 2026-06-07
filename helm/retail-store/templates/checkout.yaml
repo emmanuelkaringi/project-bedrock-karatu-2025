@@ -7,7 +7,19 @@ spec:
   selector:
     app: checkout
   ports:
-    - port: 8080
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout-redis
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,19 +38,23 @@ spec:
     spec:
       containers:
         - name: checkout
-          image: {{ .Values.checkout.image }}
+          image: {{ .Values.images.checkout }}
           ports:
             - containerPort: 8080
-          env:
-            - name: REDIS_HOST
-              value: {{ .Values.redis.host | quote }}
-            - name: REDIS_PORT
-              value: {{ .Values.redis.port | quote }}
-            - name: RABBITMQ_HOST
-              value: {{ .Values.rabbitmq.host | quote }}
-            - name: RABBITMQ_PORT
-              value: {{ .Values.rabbitmq.port | quote }}
+          envFrom:
+            - configMapRef:
+                name: checkout
           resources:
             requests:
               cpu: 100m
               memory: 128Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checkout
+  namespace: {{ .Release.Namespace }}
+data:
+  RETAIL_CHECKOUT_PERSISTENCE_PROVIDER: redis
+  RETAIL_CHECKOUT_PERSISTENCE_REDIS_URL: redis://checkout-redis:6379
+  RETAIL_CHECKOUT_ENDPOINTS_ORDERS: http://orders:80

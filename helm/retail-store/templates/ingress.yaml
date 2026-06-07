@@ -18,4 +18,4 @@ spec:
               service:
                 name: ui
                 port:
-                  number: 8080
+                  number: 80

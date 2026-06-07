@@ -7,7 +7,31 @@ spec:
   selector:
     app: orders
   ports:
-    - port: 8080
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-rabbitmq
+  namespace: retail-app
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - port: 5672
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orders
+  namespace: retail-app
+data:
+  RETAIL_ORDERS_MESSAGING_PROVIDER: rabbitmq
+  RETAIL_ORDERS_MESSAGING_RABBITMQ_ADDRESSES: orders-rabbitmq:5672
+  RETAIL_ORDERS_PERSISTENCE_PROVIDER: postgres
+  RETAIL_ORDERS_PERSISTENCE_ENDPOINT: orders-postgresql:5432
+  RETAIL_ORDERS_PERSISTENCE_NAME: orders
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,18 +50,12 @@ spec:
     spec:
       containers:
         - name: orders
-          image: public.ecr.aws/aws-containers/retail-store-sample-orders:latest
+          image: public.ecr.aws/aws-containers/retail-store-sample-orders:1.6.1
           ports:
             - containerPort: 8080
-          env:
-            - name: SPRING_RABBITMQ_HOST
-              value: "rabbitmq"
-            - name: SPRING_RABBITMQ_PORT
-              value: "5672"
-            - name: SPRING_RABBITMQ_USERNAME
-              value: "guest"
-            - name: SPRING_RABBITMQ_PASSWORD
-              value: "guest"
+          envFrom:
+            - configMapRef:
+                name: orders
           resources:
             requests:
               cpu: 100m
